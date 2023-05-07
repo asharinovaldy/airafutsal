@@ -30,4 +30,9 @@ class HomeController extends Controller
     {
         return view('admin.dashboard');
     }
+
+    public function viewSchedules()
+    {
+        return view('schedules');
+    }
 }

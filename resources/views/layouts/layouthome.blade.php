@@ -4,7 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>AIRA FUTSAL</title>
+        <title>
+          AIRA
+        </title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -59,13 +61,7 @@
             </nav>
         </div>
         <div>
-            <div class="hero d-flex justify-content-center align-items-center">
-                <div class="d-flex flex-column justify-content-center align-items-center">
-                    <h1 class="text-white font-bold fs-1 fw-bold text-uppercase text-center">Selamat Datang di Aira Sports Futsal</h1>
-                    <p class="text-white font-bold fs-3 text-center">Enjoy dan Have Fun! Buat Futsalanmu makin asik di Aira Sports.</p>
-                    <a href="{{ route('register') }}" class="btn btn-primary mx-auto btn-lg">Booking Sekarang!</a>
-                </div>
-            </div>
+            @yield('content')
         </div>
     </body>
 </html>
