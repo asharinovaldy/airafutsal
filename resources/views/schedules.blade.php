@@ -5,12 +5,12 @@
             @csrf
             <div>
                 <label for="datepicker" class="form-label">Pilih tanggal</label>
-                <input type="date" class="form-control" name="date" id="datepicker" required>
+                <input type="date" class="form-control" name="date" id="datepicker" min="{{ date('Y-m-d') }}" required>
             </div>
             <div class="mt-3">
                 <label for="fields" class="form-label">Pilih lapangan</label>
                 <select name="fields" id="fields" class="form-control" required>
-                    <option value="" disabled>Pilih lapangan</option>
+                    <option value="">Pilih lapangan</option>
                     @foreach ($fields as $field)
                         <option value="{{ $field->id }}"> {{ $field->field_name }} </option>
                     @endforeach
@@ -19,39 +19,52 @@
             <button type="submit" class="btn btn-primary my-3">Cari Jadwal</button>
         </form>
         <div class="table-responsive my-5">
-            <h2>Jadwal {{ $date }} </h2>
-            <table class="table table-striped table-bordered table-hover">
-            {{-- @dd($order) --}}
-                <thead>
-                    <tr>
-                        @php
-                            $timestamps = ['08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
-                        @endphp
+            @if ($orders)
+                {{-- parsing date to indonesian format --}}
+                <h2>Jadwal {{ \Carbon\Carbon::parse($date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y') }} </h2>
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            {{-- init timestamps variable --}}
+                            @php
+                                $timestamps = ['08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
+                            @endphp
 
-                        @foreach ($timestamps as $item)
-                            <th> {{ $item }}:00 </th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        @foreach ($timestamps as $item)
-                            <th id="col{{$item}}"></th>
-                        @endforeach
-                    </tr>
-                </tbody>
-            </table>
+                            {{-- loop the table head using timestamps variable --}}
+                            @foreach ($timestamps as $item)
+                                <th> {{ $item }}:00 </th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {{-- loop the body of table based on timestamps variable --}}
+                            @foreach ($timestamps as $item)
+                                <td id="col{{$item}}" height='25'></th>
+                            @endforeach
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
         </div>
     </div>
 @endsection
 @section('js')
     <script type="text/javascript">
+        // get data orders from controller
        let data = {{ Js::from($orders) }}
 
+    //    looping data
        data.forEach(element => {
+        // parsing the time
            let time = JSON.parse(element.booking_time)
+
+        //    loop the array booking time
            time.map(t => {
+            // slice it
                let idCol = t.slice(0,2)
+
+               //    set value to the column when the column match between column id and booking time
                let column = document.getElementById(`col${idCol}`).innerHTML = element.name
             })
        });

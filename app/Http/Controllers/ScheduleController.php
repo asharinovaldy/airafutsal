@@ -12,18 +12,25 @@ class ScheduleController extends Controller
     //
     public function index(Request $request)
     {
+        // get fields data
         $fields  = Fields::all();
-        $date = !empty($request->query('date')) ? $request->query('date') : Carbon::today()->toFormattedDateString();
-        $field = $request->query('field');
-        $currentDate = Carbon::today()->toFormattedDateString();
-        // dd($date);
+
+        // get request from input
+        $date = $request->query('date');
+        $field = $request->query('fields');
+
+        // get current date
+        $currentDate = Carbon::now()->format('Y-m-d');
+
+        // if form is filled, then return the eloquent
         if (!empty($date) && !empty($field)) {
-            $orders = Order::where('booking_date', $date)->where('field_id', $field);
+            $orders = Order::where('booking_date', $date)->where('field_id', $field)->get();
         } else {
-            // $orders = Order::where('booking_date', $currentDate)->get();
-            $orders = Order::all();
+            // return null if form is empty
+            $orders = null;
         }
 
+        // return to view, bring several variable with compact function
         return view('schedules', compact('fields', 'orders', 'date', 'field'));
     }
 }
