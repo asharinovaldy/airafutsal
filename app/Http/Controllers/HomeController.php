@@ -23,7 +23,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('user.home');
     }
 
     public function adminHome()
@@ -34,5 +34,9 @@ class HomeController extends Controller
     public function viewSchedules()
     {
         return view('schedules');
+    }
+
+    public function mySchedules()
+    {
     }
 }
