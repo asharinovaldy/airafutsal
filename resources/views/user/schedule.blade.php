@@ -21,7 +21,7 @@
         <div class="table-responsive my-5">
             @if ($orders)
                 {{-- parsing date to indonesian format --}}
-                <h2 class="fw-bold">Jadwal {{ \Carbon\Carbon::parse($date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y') }}, {{ $field->field_name }} </h2>
+                <h2 class="fw-bold">Jadwal {{ \Carbon\Carbon::parse($date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y') }}, Lapangan {{ app('request')->input('fields') }} </h2>
                 <table class="table table-striped table-bordered table-hover">
                     <thead>
                         <tr>

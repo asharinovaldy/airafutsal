@@ -36,4 +36,3 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules');
-Route::get('/getData', [UserScheduleController::class, 'checkAvailabilityField']);

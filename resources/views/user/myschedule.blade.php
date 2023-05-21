@@ -14,7 +14,6 @@
                             <th>No</th>
                             <th>Prefix</th>
                             <th>Lapangan</th>
-                            <th>Pemesan</th>
                             <th>Nama</th>
                             <th>Jam Booking</th>
                             <th>Durasi</th>
@@ -66,9 +65,9 @@
                          @endphp
 
                         <label for="booking_time" class="form-label">Waktu Mulai</label>
-                        <select name="booking_time" id="booking_time" class="form-select" onblur="checkSchedules()" required>
+                        <select name="booking_time" id="booking_time" class="form-select" required>
                             @foreach ($timestamps as $time)
-                                <option value="{{ $time }}:00" > {{ $time }}:00</option>
+                                <option value="{{ $time }}:00" id="opt{{ $time }}"> {{ $time }}:00</option>
                             @endforeach
                         </select>
                     </div>
@@ -105,7 +104,7 @@
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                     { data: 'prefix', name: 'prefix' },
                     { data: 'field_id', name: 'field_id' },
-                    { data: 'user_id', name: 'user_id' },
+                    // { data: 'user_id', name: 'user_id' },
                     { data: 'name', name: 'name' },
                     { data: 'booking_time', name: 'booking_time'},
                     { data: 'duration', name: 'duration', render:function(data){
@@ -117,13 +116,6 @@
                 ]
             })
         })
-
-        const checkSchedules = () => {
-            let schedulesData = {{ Js::from($schedule) }}
-            schedulesData.map((item) => {
-                console.log(JSON.parse(item.booking_time))
-            })
-        }
 
     </script>
 @endsection

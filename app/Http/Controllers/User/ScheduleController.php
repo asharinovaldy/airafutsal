@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Str;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ScheduleController extends Controller
 {
@@ -61,14 +62,6 @@ class ScheduleController extends Controller
             ->make(true);
     }
 
-    public function checkAvailabilityField(Request $request)
-    {
-        // dd($request->booking_time);
-        $order = Order::where('booking_date', $request->booking_date)->get();
-        // $order = Order::where('booking_date', $request->booking_date)->get()->count();
-        return response()->json($order, 200);
-    }
-
     public function store(Request $request)
     {
         // get time begin
@@ -87,6 +80,7 @@ class ScheduleController extends Controller
         // array for storing the value of booking time
         $actual_time = [];
 
+
         // if duration 1 hour, then fill array actual time same as time begin
         if ($duration == 1) {
             $actual_time[] = $time_begin->toTimeString('minutes');
@@ -97,32 +91,47 @@ class ScheduleController extends Controller
             }
         }
 
+        // get data by booking date and field id
+        $dataOrder = Order::where('field_id', $request->field)->where('booking_date', $request->booking_date)->get();
+        $timeAvailable = [];
+        foreach ($dataOrder as $key => $item) {
+            $timeAvailable = json_decode($item->booking_time);
+        }
 
-        // dd(json_encode($actual_time));
+        // comparing booking time
+        $timeComparison = array_intersect($actual_time, $timeAvailable);
+
+        // if booking time is available, then store the data to database
+        if (!$timeComparison) {
+            // validate form
+            $request->validate([
+                'field' => 'string|required',
+                'booking_name' => 'string|required',
+                'booking_name' => 'string|required',
+                'duration' => 'numeric|required|min:1',
+                'booking_date' => 'date|required'
+            ]);
 
 
-        // validate form
-        $request->validate([
-            'field' => 'string|required',
-            'booking_name' => 'string|required',
-            'booking_name' => 'string|required',
-            'duration' => 'numeric|required|min:1',
-            'booking_date' => 'date|required'
-        ]);
+            $order = new Order();
 
-        $order = new Order();
+            $order->prefix = Str::random(5);
+            $order->field_id = $request->field;
+            $order->user_id = Auth::user()->id;
+            $order->name = $request->booking_name;
+            $order->booking_time = json_encode($actual_time);
+            $order->duration = $request->duration;
+            $order->booking_date = $request->booking_date;
 
-        $order->prefix = Str::random(5);
-        $order->field_id = $request->field;
-        $order->user_id = Auth::user()->id;
-        $order->name = $request->booking_name;
-        $order->booking_time = json_encode($actual_time);
-        $order->duration = $request->duration;
-        $order->booking_date = $request->booking_date;
+            $order->save();
 
-        $order->save();
-
-        return redirect()->route('user.my-schedules');
+            Alert::success('Success', 'Terimakasih, lapangan telah dibooking');
+            return redirect()->route('user.my-schedules');
+        } else {
+            // return error message if field is booked
+            Alert::error('Error', 'Mohon maaf, jam bermain yang anda booking sudah terisi. Silahkan booking di jam lain');
+            return redirect()->route('user.my-schedules');
+        }
     }
 
     public function edit(Request $request)
