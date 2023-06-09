@@ -53,10 +53,10 @@ class ScheduleController extends Controller
             ->addIndexColumn()
             ->editColumn('action', function ($schedule) {
                 return '<form action="' . route('user.schedules.delete', $schedule->id) . '" method="POST">
-                    <a href="' . route('user.schedules.edit', [$schedule->prefix, $schedule->id]) . '" class="btn btn-primary" title="Edit"><i class="fas fa-pen"></i></a>
+                    <a href="' . route('user.schedules.edit', [$schedule->prefix, $schedule->id]) . '" class="btn btn-primary" title="Edit">Edit</a>
                     ' . csrf_field() . '
                     ' . method_field("DELETE") . '
-                    <button title="Delete" type="submit" class="btn btn-link" onclick="return confirm(\'Are you sure?\')"> <i class="fas fa-trash"></i> </button>
+                    <button title="Delete" type="submit" class="btn btn-danger" onclick="return confirm(\'Are you sure?\')"> Delete </button>
                 </form>';
             })
             ->make(true);
@@ -132,6 +132,10 @@ class ScheduleController extends Controller
             Alert::error('Error', 'Mohon maaf, jam bermain yang anda booking sudah terisi. Silahkan booking di jam lain');
             return redirect()->route('user.my-schedules');
         }
+    }
+
+    public function payment(Request $request){
+
     }
 
     public function edit(Request $request)
