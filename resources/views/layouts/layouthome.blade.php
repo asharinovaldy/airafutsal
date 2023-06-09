@@ -3,8 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>AIRA FUTSAL</title>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <title>
+          AIRA
+        </title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -59,13 +61,11 @@
             </nav>
         </div>
         <div>
-            <div class="hero d-flex justify-content-center align-items-center">
-                <div class="d-flex flex-column justify-content-center align-items-center">
-                    <h1 class="text-white font-bold fs-1 fw-bold text-uppercase text-center">Selamat Datang di Aira Sports Futsal</h1>
-                    <p class="text-white font-bold fs-3 text-center">Enjoy dan Have Fun! Buat Futsalanmu makin asik di Aira Sports.</p>
-                    <a href="{{ route('register') }}" class="btn btn-primary mx-auto btn-lg">Booking Sekarang!</a>
-                </div>
-            </div>
+            @yield('content')
         </div>
+        <script src="{{ asset('js/app.js') }}"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js" integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+        @yield('js')
     </body>
 </html>
