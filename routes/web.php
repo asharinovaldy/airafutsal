@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/user/schedules/edit', [UserScheduleController::class, 'edit'])->name('user.schedules.edit');
     Route::get('/user/data', [UserScheduleController::class, 'data']);
     Route::post('user/store', [UserScheduleController::class, 'store'])->name('user.schedules.store');
+    Route::get('/user/detail/{prefix}', [UserScheduleController::class, 'detail'])->name('user.schedules.detail');
 });
 
 Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules');

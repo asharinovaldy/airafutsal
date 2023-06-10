@@ -1,0 +1,42 @@
+@extends('layouts.app')
+@section('content')
+    <div class="container">
+        <a href="{{ route('user.my-schedules') }}" class="btn btn-link">Kembali ke jadwal saya</a>
+        <div class="row">
+            <div class="col-8">
+                <div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded my-3">
+                    <div class="card-header">
+                      <h2>Data Order Aira Futsal</h2>
+                    </div>
+                    <div class="card-body my-3">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <td> <p class="fw-bold">ID</p> </td>
+                                    <td> #{{$order->prefix}} </td>
+                                </tr>
+                                <tr>
+                                    <td> <p class="fw-bold">Lapangan</p> </td>
+                                    <td> Lapangan {{$order->field_id}} </td>
+                                </tr>
+                                <tr>
+                                    <td> <p class="fw-bold">Harga Lapangan per Jam</p> </td>
+                                    <td>  Rp. {{ number_format($price_field->price, 2, ',','.')}} </td>
+                                </tr>
+                                <tr>
+                                    <td> <p class="fw-bold">Durasi</p> </td>
+                                    <td> {{$order->duration}} Jam </td>
+                                </tr>
+                                <tr>
+                                    <td> <p class="fw-bold">Total Harga</p> </td>
+                                    <td> Rp. {{ number_format($order->total_amount, 2, ',','.')}} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button class="btn btn-primary">Bayar Sekarang</button>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+@endsection

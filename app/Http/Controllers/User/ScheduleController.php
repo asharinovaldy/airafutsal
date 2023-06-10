@@ -53,7 +53,7 @@ class ScheduleController extends Controller
             ->addIndexColumn()
             ->editColumn('action', function ($schedule) {
                 return '<form action="' . route('user.schedules.delete', $schedule->id) . '" method="POST">
-                    <a href="' . route('user.schedules.edit', [$schedule->prefix, $schedule->id]) . '" class="btn btn-primary" title="Edit">Edit</a>
+                    <a href="' . route('user.schedules.detail', [$schedule->prefix]) . '" class="btn btn-primary" title="Detail">Detail</a>
                     ' . csrf_field() . '
                     ' . method_field("DELETE") . '
                     <button title="Delete" type="submit" class="btn btn-danger" onclick="return confirm(\'Are you sure?\')"> Delete </button>
@@ -98,6 +98,12 @@ class ScheduleController extends Controller
             $timeAvailable = json_decode($item->booking_time);
         }
 
+        // get price fields
+        $field = Fields::select('price')->where('id', $request->field)->first();
+
+        // total amount = price field * duration
+        $total_amount = $field->price * $duration;
+
         // comparing booking time
         $timeComparison = array_intersect($actual_time, $timeAvailable);
 
@@ -122,6 +128,7 @@ class ScheduleController extends Controller
             $order->booking_time = json_encode($actual_time);
             $order->duration = $request->duration;
             $order->booking_date = $request->booking_date;
+            $order->total_amount = $total_amount;
 
             $order->save();
 
@@ -135,6 +142,14 @@ class ScheduleController extends Controller
     }
 
     public function payment(Request $request){
+
+    }
+
+    public function detail($prefix){
+        $order = Order::where('prefix', $prefix)->first();
+        $price_field = Fields::select('price')->where('id', $order->field_id)->first();
+
+        return view('user.detail', compact('order', 'price_field'));
 
     }
 
