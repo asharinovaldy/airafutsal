@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\User\ScheduleController as UserScheduleController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentCallbackController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/user/data', [UserScheduleController::class, 'data']);
     Route::post('user/store', [UserScheduleController::class, 'store'])->name('user.schedules.store');
     Route::get('/user/detail/{prefix}', [UserScheduleController::class, 'detail'])->name('user.schedules.detail');
+
+    // payment
+    Route::post('payments/midtrans-notification', [PaymentCallbackController::class, 'receive']);
 });
 
 Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules');

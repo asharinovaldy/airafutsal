@@ -5,12 +5,14 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Fields;
 use App\Models\Order;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Str;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\Services\Midtrans\CreateSnapTokenService;
 
 class ScheduleController extends Controller
 {
@@ -141,15 +143,38 @@ class ScheduleController extends Controller
         }
     }
 
-    public function payment(Request $request){
+    // public function payment(Order $order){
+    //     $snapToken = $order->snap_token;
 
-    }
+    //     if (is_null($snapToken)){
+    //         // if snap token is still null, generate snap token and save it to database
+    //         $midtrans = new CreateSnapTokenService($order);
+    //         $snapToken = $midtrans->getSnapToken();
+
+    //         $order->snap_token = $snapToken;
+    //         $order->save();
+    //     }
+
+    //     return view('user.show-payment', compact('snapToken', 'order'));
+    // }
 
     public function detail($prefix){
         $order = Order::where('prefix', $prefix)->first();
         $price_field = Fields::select('price')->where('id', $order->field_id)->first();
+        $user = User::where('id', $order->user_id)->first();
 
-        return view('user.detail', compact('order', 'price_field'));
+        // dd($user);
+        $snapToken = $order->snap_token;
+        if (is_null($snapToken)){
+            // if snap token is still null, generate snap token and save it to database
+            $midtrans = new CreateSnapTokenService($order);
+            $snapToken = $midtrans->getSnapToken();
+
+            $order->snap_token = $snapToken;
+            $order->save();
+        }
+
+        return view('user.detail', compact('order', 'price_field', 'snapToken'));
 
     }
 
