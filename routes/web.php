@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\ScheduleController as AdminScheduleController;
+use App\Http\Controllers\Admin\FieldsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\User\ScheduleController as UserScheduleController;
@@ -26,6 +28,18 @@ Auth::routes();
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/admin/home', [HomeController::class, 'adminHome'])->name('admin.home')->middleware('is_admin');
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    // admin
+    Route::get('admin/schedules', [AdminScheduleController::class, 'mySchedules'])->name('admin.schedules');
+    Route::get('/admin/data', [AdminScheduleController::class, 'data']);
+    Route::get('/admin/edit/{prefix}', [AdminScheduleController::class, 'edit'])->name('admin.edit');
+    Route::get('/admin/fields', [FieldsController::class, 'index'])->name('admin.fields');
+    Route::post('/admin/store', [FieldsController::class, 'store'])->name('admin.store.fields');
+    Route::get('/admin/data/fields', [FieldsController::class, 'data']);
+    Route::get('/admin/fields/edit/{id}', [FieldsController::class, 'edit'])->name('admin.edit.fields');
+    Route::put('/admin/fields/update/{id}', [FieldsController::class, 'update'])->name('admin.update.fields');
+    Route::delete('/admin/fields/delete/{id}', [FieldsController::class, 'destroy'])->name('admin.delete.fields');
+    Route::get('admin/booking', [AdminScheduleController::class, 'index'])->name('admin.booking');
 
     // user
     Route::get('user/schedules', [UserScheduleController::class, 'index'])->name('user.schedules');
