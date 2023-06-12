@@ -5,12 +5,14 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Fields;
 use App\Models\Order;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Str;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\Services\Midtrans\CreateSnapTokenService;
 
 class ScheduleController extends Controller
 {
@@ -53,7 +55,7 @@ class ScheduleController extends Controller
             ->addIndexColumn()
             ->editColumn('action', function ($schedule) {
                 return '<form action="' . route('user.schedules.delete', $schedule->id) . '" method="POST">
-                    <a href="' . route('user.schedules.edit', [$schedule->prefix, $schedule->id]) . '" class="btn btn-primary" title="Edit">Edit</a>
+                    <a href="' . route('user.schedules.detail', [$schedule->prefix]) . '" class="btn btn-primary" title="Detail">Detail</a>
                     ' . csrf_field() . '
                     ' . method_field("DELETE") . '
                     <button title="Delete" type="submit" class="btn btn-danger" onclick="return confirm(\'Are you sure?\')"> Delete </button>
@@ -98,6 +100,12 @@ class ScheduleController extends Controller
             $timeAvailable = json_decode($item->booking_time);
         }
 
+        // get price fields
+        $field = Fields::select('price')->where('id', $request->field)->first();
+
+        // total amount = price field * duration
+        $total_amount = $field->price * $duration;
+
         // comparing booking time
         $timeComparison = array_intersect($actual_time, $timeAvailable);
 
@@ -122,6 +130,7 @@ class ScheduleController extends Controller
             $order->booking_time = json_encode($actual_time);
             $order->duration = $request->duration;
             $order->booking_date = $request->booking_date;
+            $order->total_amount = $total_amount;
 
             $order->save();
 
@@ -134,7 +143,38 @@ class ScheduleController extends Controller
         }
     }
 
-    public function payment(Request $request){
+    // public function payment(Order $order){
+    //     $snapToken = $order->snap_token;
+
+    //     if (is_null($snapToken)){
+    //         // if snap token is still null, generate snap token and save it to database
+    //         $midtrans = new CreateSnapTokenService($order);
+    //         $snapToken = $midtrans->getSnapToken();
+
+    //         $order->snap_token = $snapToken;
+    //         $order->save();
+    //     }
+
+    //     return view('user.show-payment', compact('snapToken', 'order'));
+    // }
+
+    public function detail($prefix){
+        $order = Order::where('prefix', $prefix)->first();
+        $price_field = Fields::select('price')->where('id', $order->field_id)->first();
+        $user = User::where('id', $order->user_id)->first();
+
+        // dd($user);
+        $snapToken = $order->snap_token;
+        if (is_null($snapToken)){
+            // if snap token is still null, generate snap token and save it to database
+            $midtrans = new CreateSnapTokenService($order);
+            $snapToken = $midtrans->getSnapToken();
+
+            $order->snap_token = $snapToken;
+            $order->save();
+        }
+
+        return view('user.detail', compact('order', 'price_field', 'snapToken'));
 
     }
 
