@@ -21,7 +21,7 @@
                                 </tr>
                                 <tr>
                                     <td> <p class="fw-bold">Harga Lapangan per Jam</p> </td>
-                                    <td>  Rp. {{ number_format($price_field->price, 2, ',','.')}} </td>
+                                    <td>  Rp. {{ number_format($field->price, 2, ',','.')}} </td>
                                 </tr>
                                 <tr>
                                     <td> <p class="fw-bold">Durasi</p> </td>
@@ -45,7 +45,7 @@
     </div>
 @endsection
 @section('js')
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.clientKey') }}">
     </script>
     <script>
         const payButton = document.querySelector('#pay-button');

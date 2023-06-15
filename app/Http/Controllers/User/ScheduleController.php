@@ -134,7 +134,7 @@ class ScheduleController extends Controller
 
             $order->save();
 
-            Alert::success('Success', 'Terimakasih, lapangan telah dibooking');
+            Alert::success('Success', 'Terimakasih, lapangan telah dibooking. Untuk melanjutkan pembayaran, klik tombol detail di halaman.');
             return redirect()->route('user.my-schedules');
         } else {
             // return error message if field is booked
@@ -160,21 +160,21 @@ class ScheduleController extends Controller
 
     public function detail($prefix){
         $order = Order::where('prefix', $prefix)->first();
-        $price_field = Fields::select('price')->where('id', $order->field_id)->first();
+        $field = Fields::where('id', $order->field_id)->first();
         $user = User::where('id', $order->user_id)->first();
 
         // dd($user);
         $snapToken = $order->snap_token;
         if (is_null($snapToken)){
             // if snap token is still null, generate snap token and save it to database
-            $midtrans = new CreateSnapTokenService($order);
+            $midtrans = new CreateSnapTokenService($order, $user);
             $snapToken = $midtrans->getSnapToken();
 
             $order->snap_token = $snapToken;
             $order->save();
         }
 
-        return view('user.detail', compact('order', 'price_field', 'snapToken'));
+        return view('user.detail', compact('order', 'field', 'snapToken'));
 
     }
 
