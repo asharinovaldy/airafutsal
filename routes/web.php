@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BootsController;
 use App\Http\Controllers\Admin\ScheduleController as AdminScheduleController;
 use App\Http\Controllers\Admin\FieldsController;
 use App\Http\Controllers\HomeController;
@@ -40,6 +41,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/admin/fields/update/{id}', [FieldsController::class, 'update'])->name('admin.update.fields');
     Route::delete('/admin/fields/delete/{id}', [FieldsController::class, 'destroy'])->name('admin.delete.fields');
     Route::get('admin/booking', [AdminScheduleController::class, 'index'])->name('admin.booking');
+    Route::get('admin/boots', [BootsController::class, 'index'])->name('admin.boots');
+    Route::post('admin/boots/store', [BootsController::class, 'store'])->name('admin.boots.store');
+    Route::get('admin/boots/edit/{id}', [BootsController::class, 'edit'])->name('admin.boots.edit');
+    Route::put('admin/boots/update/{id}', [BootsController::class, 'update'])->name('admin.boots.update');
+    Route::delete('admin/boots/delete/{id}', [BootsController::class, 'destroy'])->name('admin.boots.destroy');
+
+    // Route::resource('boots', BootsController::class);
 
     // user
     Route::get('user/schedules', [UserScheduleController::class, 'index'])->name('user.schedules');
@@ -50,8 +58,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('user/store', [UserScheduleController::class, 'store'])->name('user.schedules.store');
     Route::get('/user/detail/{prefix}', [UserScheduleController::class, 'detail'])->name('user.schedules.detail');
 
-    // payment
-    Route::post('payments/midtrans-notification', [PaymentCallbackController::class, 'receive']);
 });
+
+// payment
+Route::post('payments/midtrans-notification', [PaymentCallbackController::class, 'receive']);
 
 Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules');

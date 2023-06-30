@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>AIRA FUTSAL ADMIN MANAGEMENT</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -42,6 +42,9 @@
                             </li>
                             <li class="nav-item active">
                                 <a href="{{ route('admin.booking') }}" {!! route('admin.booking') ? "class='nav-link active'" : "class='nav-link'" !!}>Data Booking</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a href="{{ route('admin.boots') }}" {!! route('admin.boots') ? "class='nav-link active'" : "class='nav-link'" !!}>Data Sepatu</a>
                             </li>
                         </ul>
 

@@ -12,6 +12,6 @@ class Boots extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'size', 'price'
+        'image', 'name', 'size', 'price', 'stock'
     ];
 }
