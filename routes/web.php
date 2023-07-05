@@ -57,8 +57,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/user/data', [UserScheduleController::class, 'data']);
     Route::post('user/store', [UserScheduleController::class, 'store'])->name('user.schedules.store');
     Route::get('/user/detail/{prefix}', [UserScheduleController::class, 'detail'])->name('user.schedules.detail');
-
 });
+
+Route::get('/user/get-data-boots/{id}', [UserScheduleController::class, 'getBoots'])->name('get-data-boots');
 
 // payment
 Route::post('payments/midtrans-notification', [PaymentCallbackController::class, 'receive']);

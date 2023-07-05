@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Ball;
+use App\Models\Boots;
 use App\Models\Fields;
 use App\Models\Order;
 use App\Models\User;
@@ -45,7 +47,8 @@ class ScheduleController extends Controller
     {
         $schedule = Order::where('user_id', Auth::user()->id)->get();
         $fields = Fields::all();
-        return view('user.myschedule', compact('schedule', 'fields'));
+        $boots = Boots::all();
+        return view('user.myschedule', compact('schedule', 'fields', 'boots'));
     }
 
     public function data()
@@ -103,8 +106,29 @@ class ScheduleController extends Controller
         // get price fields
         $field = Fields::select('price')->where('id', $request->field)->first();
 
-        // total amount = price field * duration
-        $total_amount = $field->price * $duration;
+         // handle boots if user make an order
+         $boot_price = null;
+         $ball_price = null;
+
+        if ($request->filled('boots') && $request->filled('balls') ){
+             $boots = Boots::findOrFail($request->boots);
+             $balls = Ball::findOrFail($request->balls);
+             $boot_price = $boots->price;
+             $ball_price = $balls->price;
+             $total_amount = ($field->price * $duration) + ($boot_price + $ball_price);
+        } else if ($request->filled('boots')) {
+             $boots = Boots::findOrFail($request->boots);
+             $boot_price = $boots->price;
+             $total_amount = ($field->price * $duration) + $boot_price;
+             $boots_price = null;
+        } else if ($request->filled('balls')){
+            $balls = Ball::findOrFail($request->balls);
+            $ball_price = $balls->price;
+            $total_amount = ($field->price * $duration) + $ball_price;
+        } else {
+            // total amount = price field * duration
+            $total_amount = $field->price * $duration;
+        }
 
         // comparing booking time
         $timeComparison = array_intersect($actual_time, $timeAvailable);
@@ -157,6 +181,16 @@ class ScheduleController extends Controller
 
     //     return view('user.show-payment', compact('snapToken', 'order'));
     // }
+
+    public function getBoots($id){
+        $data = Boots::findOrFail($id);
+
+        return response()->json(['status' => 'success', 'data' => $data]);
+    }
+
+    public function getBalls($id){
+
+    }
 
     public function detail($prefix){
         $order = Order::where('prefix', $prefix)->first();
