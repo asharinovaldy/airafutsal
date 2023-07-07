@@ -90,11 +90,13 @@
                             </div>
                             <div id="form-boots">
                                 <div class="mb-3">
-                                    <label for="boots" class="form-label">Pilih Sepatu</label>
+                                    <label for="boots" class="form-label">Pilih Sepatu (Ready Stock)</label>
                                     <select name="boots" id="boots" class="form-select" onchange="selectedBoots()">
                                         <option value="">Pilih tipe sepatu</option>
                                         @foreach ($boots as $boot)
-                                            <option value="{{ $boot->id }}"> {{ $boot->name }} </option>
+                                            @if ($boot->stock > 0)
+                                                <option value="{{ $boot->id }}"> {{ $boot->name }} </option>
+                                            @endif
                                         @endforeach
                                     </select>
                                     <div class="row my-2">
@@ -118,11 +120,15 @@
                                             </table>
                                         </div>
                                     </div>
+                                    <div class="mb-2">
+                                        <label for="quantity_boots">Quantity</label>
+                                        <input type="number" class="form-control" name="quantity_boots" id="quantity_boots">
+                                    </div>
                                 </div>
                             </div>
                             <div id="form-balls">
                                 <div class="mb-3">
-                                    <label for="balls" class="form-label">Pilih Sepatu</label>
+                                    <label for="balls" class="form-label">Pilih Bola</label>
                                     <select name="balls" id="balls" class="form-select" onchange="selectedBoots()">
                                         <option value="">Pilih tipe bola</option>
                                         @foreach ($boots as $boot)
@@ -150,6 +156,10 @@
                                             </table>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label for="quantity_balls">Quantity</label>
+                                    <input type="number" class="form-control" name="quantity_balls" id="quantity_balls">
                                 </div>
                             </div>
                         </div>

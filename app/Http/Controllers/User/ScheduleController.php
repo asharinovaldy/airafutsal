@@ -111,24 +111,61 @@ class ScheduleController extends Controller
          $ball_price = null;
 
         if ($request->filled('boots') && $request->filled('balls') ){
-             $boots = Boots::findOrFail($request->boots);
-             $balls = Ball::findOrFail($request->balls);
-             $boot_price = $boots->price;
-             $ball_price = $balls->price;
-             $total_amount = ($field->price * $duration) + ($boot_price + $ball_price);
-        } else if ($request->filled('boots')) {
-             $boots = Boots::findOrFail($request->boots);
-             $boot_price = $boots->price;
-             $total_amount = ($field->price * $duration) + $boot_price;
-             $boots_price = null;
-        } else if ($request->filled('balls')){
+            // get value from request
+            $boots = Boots::findOrFail($request->boots);
             $balls = Ball::findOrFail($request->balls);
-            $ball_price = $balls->price;
+            $quantity_boots = $request->quantity_boots;
+            $quantity_balls = $request->quantity_balls;
+
+            // get the price
+            $boot_price = $boots->price * $quantity_boots;
+            $ball_price = $balls->price * $quantity_balls;
+
+            // set total amount
+            $total_amount = ($field->price * $duration) + ($boot_price + $ball_price);
+
+            // update stock
+            $update_stock_boots = $boots->stock - (int) $quantity_boots;
+            $boots->update(['stock' => $update_stock_boots]);
+            $update_stock_balls = $balls->stock - (int) $quantity_balls;
+            $balls->update(['stock' => $update_stock_balls]);
+
+        } else if ($request->filled('boots')) {
+            // get value from request
+            $boots = Boots::findOrFail($request->boots);
+            $quantity_boots = $request->quantity_boots;
+
+            // get the price
+            $boot_price = $boots->price * $quantity_boots;
+
+            // set total amount
+            $total_amount = ($field->price * $duration) + $boot_price;
+
+            // update stock
+            $update_stock_boots = $boots->stock - (int) $quantity_boots;
+            $boots->update(['stock' => $update_stock_boots]);
+
+        } else if ($request->filled('balls')){
+            // get value from request
+            $balls = Ball::findOrFail($request->balls);
+            $quantity_balls = $request->quantity_balls;
+
+            // get the price
+            $ball_price = $balls->price * $quantity_balls;
+
+            // set total amount
             $total_amount = ($field->price * $duration) + $ball_price;
+
+            // update stock
+            $update_stock_balls = $balls->stock - (int) $quantity_balls;
+            $balls->update(['stock' => $update_stock_balls]);
+
         } else {
             // total amount = price field * duration
             $total_amount = $field->price * $duration;
         }
+
+        dd($total_amount);
 
         // comparing booking time
         $timeComparison = array_intersect($actual_time, $timeAvailable);
