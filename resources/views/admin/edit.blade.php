@@ -28,6 +28,16 @@
                                 <td> {{$order->duration}} Jam </td>
                             </tr>
                             <tr>
+                                <td><p class="fw-bold">Sewa Sepatu</p></td>
+                                <td>
+                                        {{ $order->boots_id ? $order->boots?->name : '-' }} <br /> <img src="{{ Storage::url('images/').$order->boots?->image }}" alt="" height="100" srcset="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><p class="fw-bold">Sewa Bola</p></td>
+                                <td> {{ $order->balls_id ? $order->balls?->name : '-' }} <br /> <img src="{{ Storage::url('images/').$order->balls?->image }}" alt="" height="100" srcset="">  </td>
+                            </tr>
+                            <tr>
                                 <td> <p class="fw-bold">Total Harga</p> </td>
                                 <td> Rp. {{ number_format($order->total_amount, 2, ',','.')}} </td>
                             </tr>

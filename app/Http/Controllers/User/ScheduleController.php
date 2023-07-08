@@ -48,7 +48,8 @@ class ScheduleController extends Controller
         $schedule = Order::where('user_id', Auth::user()->id)->get();
         $fields = Fields::all();
         $boots = Boots::all();
-        return view('user.myschedule', compact('schedule', 'fields', 'boots'));
+        $balls = Ball::all();
+        return view('user.myschedule', compact('schedule', 'fields', 'boots', 'balls'));
     }
 
     public function data()
@@ -165,8 +166,6 @@ class ScheduleController extends Controller
             $total_amount = $field->price * $duration;
         }
 
-        dd($total_amount);
-
         // comparing booking time
         $timeComparison = array_intersect($actual_time, $timeAvailable);
 
@@ -186,12 +185,20 @@ class ScheduleController extends Controller
 
             $order->prefix = Str::random(5);
             $order->field_id = $request->field;
+            $order->boots_id = $request->boots;
+            $order->balls_id = $request->balls;
             $order->user_id = Auth::user()->id;
             $order->name = $request->booking_name;
             $order->booking_time = json_encode($actual_time);
             $order->duration = $request->duration;
             $order->booking_date = $request->booking_date;
             $order->total_amount = $total_amount;
+
+            if ($request->payment === 'Transfer'){
+                $order->status = 'Pending';
+            } else if ($request->payment === 'Cash') {
+                $order->status = 'Cash';
+            }
 
             $order->save();
 
@@ -226,11 +233,13 @@ class ScheduleController extends Controller
     }
 
     public function getBalls($id){
+        $data = Ball::findOrFail($id);
 
+        return response()->json(['status' => 'success', 'data' => $data]);
     }
 
     public function detail($prefix){
-        $order = Order::where('prefix', $prefix)->first();
+        $order = Order::where('prefix', $prefix)->with('boots')->first();
         $field = Fields::where('id', $order->field_id)->first();
         $user = User::where('id', $order->user_id)->first();
 
@@ -246,14 +255,23 @@ class ScheduleController extends Controller
         }
 
         return view('user.detail', compact('order', 'field', 'snapToken'));
-
     }
 
     public function edit(Request $request)
     {
     }
 
-    public function destroy(Request $request)
+    public function destroy($id)
     {
+        $order = Order::findOrFail($id);
+        $order->delete();
+
+        if($order){
+            Alert::success('Success', 'Data Berhasil Dihapus!');
+            return redirect()->route('user.my-schedules');
+        }else{
+            Alert::error('Error', 'Data Gagal Dihapus!');
+            return redirect()->route('user.my-schedules');
+        }
     }
 }

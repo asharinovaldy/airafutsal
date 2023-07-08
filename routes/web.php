@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BallsController;
 use App\Http\Controllers\Admin\BootsController;
 use App\Http\Controllers\Admin\ScheduleController as AdminScheduleController;
 use App\Http\Controllers\Admin\FieldsController;
@@ -32,8 +33,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     // admin
     Route::get('admin/schedules', [AdminScheduleController::class, 'mySchedules'])->name('admin.schedules');
+    Route::delete('admin/schedules/delete/{id}', [AdminScheduleController::class, 'destroy'])->name('admin.schedules.delete');
+    Route::post('/admin/schedules/store', [AdminScheduleController::class, 'store'])->name('admin.schedule.store');
     Route::get('/admin/data', [AdminScheduleController::class, 'data']);
-    Route::get('/admin/edit/{prefix}', [AdminScheduleController::class, 'edit'])->name('admin.edit');
+    Route::get('/admin/detail/{prefix}', [AdminScheduleController::class, 'detail'])->name('admin.detail');
     Route::get('/admin/fields', [FieldsController::class, 'index'])->name('admin.fields');
     Route::post('/admin/store', [FieldsController::class, 'store'])->name('admin.store.fields');
     Route::get('/admin/data/fields', [FieldsController::class, 'data']);
@@ -46,13 +49,19 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('admin/boots/edit/{id}', [BootsController::class, 'edit'])->name('admin.boots.edit');
     Route::put('admin/boots/update/{id}', [BootsController::class, 'update'])->name('admin.boots.update');
     Route::delete('admin/boots/delete/{id}', [BootsController::class, 'destroy'])->name('admin.boots.destroy');
+    Route::get('admin/balls', [BallsController::class, 'index'])->name('admin.balls');
+    Route::post('admin/balls/store', [BallsController::class, 'store'])->name('admin.balls.store');
+    Route::get('admin/balls/edit/{id}', [BallsController::class, 'edit'])->name('admin.balls.edit');
+    Route::put('admin/balls/update/{id}', [BallsController::class, 'update'])->name('admin.balls.update');
+    Route::delete('admin/balls/delete/{id}', [BallsController::class, 'destroy'])->name('admin.balls.destroy');
+
 
     // Route::resource('boots', BootsController::class);
 
     // user
     Route::get('user/schedules', [UserScheduleController::class, 'index'])->name('user.schedules');
     Route::get('user/my-schedules', [UserScheduleController::class, 'mySchedules'])->name('user.my-schedules');
-    Route::delete('/user/my-schedules/delete', [UserScheduleController::class, 'destroy'])->name('user.schedules.delete');
+    Route::delete('/user/my-schedules/delete/{id}', [UserScheduleController::class, 'destroy'])->name('user.schedules.delete');
     Route::put('/user/schedules/edit', [UserScheduleController::class, 'edit'])->name('user.schedules.edit');
     Route::get('/user/data', [UserScheduleController::class, 'data']);
     Route::post('user/store', [UserScheduleController::class, 'store'])->name('user.schedules.store');
@@ -60,6 +69,9 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/user/get-data-boots/{id}', [UserScheduleController::class, 'getBoots'])->name('get-data-boots');
+Route::get('/user/get-data-balls/{id}', [UserScheduleController::class, 'getBalls'])->name('get-data-balls');
+Route::get('/admin/get-data-boots/{id}', [UserScheduleController::class, 'getBoots'])->name('get-data-boots');
+Route::get('/admin/get-data-balls/{id}', [UserScheduleController::class, 'getBalls'])->name('get-data-balls');
 
 // payment
 Route::post('payments/midtrans-notification', [PaymentCallbackController::class, 'receive']);

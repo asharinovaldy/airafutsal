@@ -11,5 +11,5 @@ class Ball extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name', 'price'];
+    protected $fillable = ['name', 'price', 'image', 'stock'];
 }

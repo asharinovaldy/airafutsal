@@ -41,10 +41,13 @@
                                 <a href="{{ route('admin.fields') }}" {!! route('admin.fields') ? "class='nav-link active'" : "class='nav-link'" !!}>Data Lapangan</a>
                             </li>
                             <li class="nav-item active">
-                                <a href="{{ route('admin.booking') }}" {!! route('admin.booking') ? "class='nav-link active'" : "class='nav-link'" !!}>Data Booking</a>
+                                <a href="{{ route('admin.booking') }}" {!! route('admin.booking') ? "class='nav-link active'" : "class='nav-link'" !!}>Cek Jadwal Lapangan</a>
                             </li>
                             <li class="nav-item active">
                                 <a href="{{ route('admin.boots') }}" {!! route('admin.boots') ? "class='nav-link active'" : "class='nav-link'" !!}>Data Sepatu</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a href="{{ route('admin.balls') }}" {!! route('admin.balls') ? "class='nav-link active'" : "class='nav-link'" !!}>Data Bola</a>
                             </li>
                         </ul>
 

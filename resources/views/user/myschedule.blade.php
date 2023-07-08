@@ -129,29 +129,25 @@
                             <div id="form-balls">
                                 <div class="mb-3">
                                     <label for="balls" class="form-label">Pilih Bola</label>
-                                    <select name="balls" id="balls" class="form-select" onchange="selectedBoots()">
+                                    <select name="balls" id="balls" class="form-select" onchange="selectedBalls()">
                                         <option value="">Pilih tipe bola</option>
-                                        @foreach ($boots as $boot)
-                                            <option value="{{ $boot->id }}"> {{ $boot->name }} </option>
+                                        @foreach ($balls as $ball)
+                                            <option value="{{ $ball->id }}"> {{ $ball->name }} </option>
                                         @endforeach
                                     </select>
                                     <div class="row my-2">
                                         <div class="col-lg-5 col-sm-12">
-                                            <img src="" alt="" srcset="" id="boots-image" height="120">
+                                            <img src="" alt="" srcset="" id="balls-image" height="120">
                                         </div>
                                         <div class="col-lg-7 col-sm-12">
                                             <table class="table table-borderless">
                                                 <tr>
-                                                    <td>Ukuran</td>
-                                                    <td id="boots-size"></td>
-                                                </tr>
-                                                <tr>
                                                     <td>Harga Sewa</td>
-                                                    <td id="boots-price"></td>
+                                                    <td id="balls-price"></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Stok Tersedia</td>
-                                                    <td id="boots-stock"></td>
+                                                    <td id="balls-stock"></td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -231,6 +227,26 @@
                     $('#boots-size').html(data.data.size)
                     $('#boots-price').html(data.data.price)
                     $('#boots-stock').html(data.data.stock)
+                }
+            })
+        }
+
+        const selectedBalls = () => {
+            // let bootsForm = document.getElementById('boots')
+            // let bootsId = bootsForm.value
+
+            let ballsId = $('#balls').find(':selected').val();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                method: "GET",
+                url: `get-data-balls/${ballsId}`,
+                success: (data) => {
+                    $('#balls-image').attr('src', `{{ Storage::url('images/${data.data.image}') }}`)
+                    $('#balls-price').html(data.data.price)
+                    $('#balls-stock').html(data.data.stock)
                 }
             })
         }

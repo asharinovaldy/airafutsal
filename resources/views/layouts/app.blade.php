@@ -38,7 +38,7 @@
                                 <a href="{{ route('user.my-schedules') }}" {!! route('user.my-schedules') ? "class='nav-link active'" : "class='nav-link'" !!}>Jadwal Saya</a>
                             </li>
                             <li class="nav-item active">
-                                <a href="{{ route('user.schedules') }}" {!! route('user.schedules') ? "class='nav-link active'" : "class='nav-link'" !!} >Jadwal Lapangan</a>
+                                <a href="{{ route('user.schedules') }}" {!! route('user.schedules') ? "class='nav-link active'" : "class='nav-link'" !!} >Cek Jadwal Lapangan</a>
                             </li>
                         </ul>
 
