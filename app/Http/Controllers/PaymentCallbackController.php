@@ -25,13 +25,13 @@ class PaymentCallbackController extends Controller
 
             if ($callback->isExpire()) {
                 Order::where('prefix', $order->prefix)->update([
-                    'payment_status' => 'Unpaid',
+                    'status' => 'Unpaid',
                 ]);
             }
 
             if ($callback->isCancelled()) {
                 Order::where('prefix', $order->prefix)->update([
-                    'payment_status' => 'Cancel',
+                    'status' => 'Cancel',
                 ]);
             }
 

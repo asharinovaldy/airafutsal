@@ -10,15 +10,17 @@ class CreateSnapTokenService extends Midtrans {
     protected $fields;
     protected $user;
 
-    public function __construct($order)
+    public function __construct($order, $user)
     {
         parent::__construct();
 
         $this->order = $order;
+        $this->user = $user;
     }
 
     public function getSnapToken()
     {
+
         $params = [
             'transaction_details' => [
                 'order_id' => $this->order->prefix,
@@ -30,10 +32,10 @@ class CreateSnapTokenService extends Midtrans {
             //     'quantity' => $this->order->duration,
             //     'name' => $this->fields->field_name
             // ],
-            // 'customer_details' => [
-            //     'first_name' => $this->user->name,
-            //     'email' => $this->user->email,
-            // ]
+            'customer_details' => [
+                'first_name' => $this->order->name,
+                'email' => $this->user->email,
+            ]
         ];
 
         $snapToken = Snap::getSnapToken($params);

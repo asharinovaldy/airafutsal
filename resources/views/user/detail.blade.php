@@ -21,11 +21,21 @@
                                 </tr>
                                 <tr>
                                     <td> <p class="fw-bold">Harga Lapangan per Jam</p> </td>
-                                    <td>  Rp. {{ number_format($price_field->price, 2, ',','.')}} </td>
+                                    <td>  Rp. {{ number_format($field->price, 2, ',','.')}} </td>
                                 </tr>
                                 <tr>
                                     <td> <p class="fw-bold">Durasi</p> </td>
                                     <td> {{$order->duration}} Jam </td>
+                                </tr>
+                                <tr>
+                                    <td><p class="fw-bold">Sewa Sepatu</p></td>
+                                    <td>
+                                            {{ $order->boots_id ? $order->boots?->name : '-' }} <br /> <img src="{{ Storage::url('images/').$order->boots?->image }}" alt="" height="100" srcset="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><p class="fw-bold">Sewa Bola</p></td>
+                                    <td> {{ $order->balls_id ? $order->balls?->name : '-' }} <br /> <img src="{{ Storage::url('images/').$order->balls?->image }}" alt="" height="100" srcset="">  </td>
                                 </tr>
                                 <tr>
                                     <td> <p class="fw-bold">Total Harga</p> </td>
@@ -33,8 +43,10 @@
                                 </tr>
                             </tbody>
                         </table>
-                        @if ($order->status != 'Pending')
-                            <p>Payment Successful</p>
+                        @if ($order->status === 'Done')
+                            <p>Terimakasih, pembayaran telah sukses ditransfer!</p>
+                        @elseif ($order->status === 'Cash')
+                            <p>Pembayaran cash, pembayaran dapat dilakukan di lokasi. Terimakasih.</p>
                         @else
                             <button class="btn btn-primary" id="pay-button">Bayar Sekarang</button>
                         @endif
@@ -45,7 +57,7 @@
     </div>
 @endsection
 @section('js')
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.clientKey') }}">
     </script>
     <script>
         const payButton = document.querySelector('#pay-button');
