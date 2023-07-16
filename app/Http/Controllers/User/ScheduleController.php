@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Ball;
+use App\Models\Boots;
 use App\Models\Fields;
 use App\Models\Order;
 use App\Models\User;
@@ -45,7 +47,9 @@ class ScheduleController extends Controller
     {
         $schedule = Order::where('user_id', Auth::user()->id)->get();
         $fields = Fields::all();
-        return view('user.myschedule', compact('schedule', 'fields'));
+        $boots = Boots::all();
+        $balls = Ball::all();
+        return view('user.myschedule', compact('schedule', 'fields', 'boots', 'balls'));
     }
 
     public function data()
@@ -103,8 +107,64 @@ class ScheduleController extends Controller
         // get price fields
         $field = Fields::select('price')->where('id', $request->field)->first();
 
-        // total amount = price field * duration
-        $total_amount = $field->price * $duration;
+         // handle boots if user make an order
+         $boot_price = null;
+         $ball_price = null;
+
+        if ($request->filled('boots') && $request->filled('balls') ){
+            // get value from request
+            $boots = Boots::findOrFail($request->boots);
+            $balls = Ball::findOrFail($request->balls);
+            $quantity_boots = $request->quantity_boots;
+            $quantity_balls = $request->quantity_balls;
+
+            // get the price
+            $boot_price = $boots->price * $quantity_boots;
+            $ball_price = $balls->price * $quantity_balls;
+
+            // set total amount
+            $total_amount = ($field->price * $duration) + ($boot_price + $ball_price);
+
+            // update stock
+            $update_stock_boots = $boots->stock - (int) $quantity_boots;
+            $boots->update(['stock' => $update_stock_boots]);
+            $update_stock_balls = $balls->stock - (int) $quantity_balls;
+            $balls->update(['stock' => $update_stock_balls]);
+
+        } else if ($request->filled('boots')) {
+            // get value from request
+            $boots = Boots::findOrFail($request->boots);
+            $quantity_boots = $request->quantity_boots;
+
+            // get the price
+            $boot_price = $boots->price * $quantity_boots;
+
+            // set total amount
+            $total_amount = ($field->price * $duration) + $boot_price;
+
+            // update stock
+            $update_stock_boots = $boots->stock - (int) $quantity_boots;
+            $boots->update(['stock' => $update_stock_boots]);
+
+        } else if ($request->filled('balls')){
+            // get value from request
+            $balls = Ball::findOrFail($request->balls);
+            $quantity_balls = $request->quantity_balls;
+
+            // get the price
+            $ball_price = $balls->price * $quantity_balls;
+
+            // set total amount
+            $total_amount = ($field->price * $duration) + $ball_price;
+
+            // update stock
+            $update_stock_balls = $balls->stock - (int) $quantity_balls;
+            $balls->update(['stock' => $update_stock_balls]);
+
+        } else {
+            // total amount = price field * duration
+            $total_amount = $field->price * $duration;
+        }
 
         // comparing booking time
         $timeComparison = array_intersect($actual_time, $timeAvailable);
@@ -125,6 +185,8 @@ class ScheduleController extends Controller
 
             $order->prefix = Str::random(5);
             $order->field_id = $request->field;
+            $order->boots_id = $request->boots;
+            $order->balls_id = $request->balls;
             $order->user_id = Auth::user()->id;
             $order->name = $request->booking_name;
             $order->booking_time = json_encode($actual_time);
@@ -132,9 +194,15 @@ class ScheduleController extends Controller
             $order->booking_date = $request->booking_date;
             $order->total_amount = $total_amount;
 
+            if ($request->payment === 'Transfer'){
+                $order->status = 'Pending';
+            } else if ($request->payment === 'Cash') {
+                $order->status = 'Cash';
+            }
+
             $order->save();
 
-            Alert::success('Success', 'Terimakasih, lapangan telah dibooking');
+            Alert::success('Success', 'Terimakasih, lapangan telah dibooking. Untuk melanjutkan pembayaran, klik tombol detail di halaman.');
             return redirect()->route('user.my-schedules');
         } else {
             // return error message if field is booked
@@ -158,31 +226,52 @@ class ScheduleController extends Controller
     //     return view('user.show-payment', compact('snapToken', 'order'));
     // }
 
+    public function getBoots($id){
+        $data = Boots::findOrFail($id);
+
+        return response()->json(['status' => 'success', 'data' => $data]);
+    }
+
+    public function getBalls($id){
+        $data = Ball::findOrFail($id);
+
+        return response()->json(['status' => 'success', 'data' => $data]);
+    }
+
     public function detail($prefix){
-        $order = Order::where('prefix', $prefix)->first();
-        $price_field = Fields::select('price')->where('id', $order->field_id)->first();
+        $order = Order::where('prefix', $prefix)->with('boots')->first();
+        $field = Fields::where('id', $order->field_id)->first();
         $user = User::where('id', $order->user_id)->first();
 
         // dd($user);
         $snapToken = $order->snap_token;
         if (is_null($snapToken)){
             // if snap token is still null, generate snap token and save it to database
-            $midtrans = new CreateSnapTokenService($order);
+            $midtrans = new CreateSnapTokenService($order, $user);
             $snapToken = $midtrans->getSnapToken();
 
             $order->snap_token = $snapToken;
             $order->save();
         }
 
-        return view('user.detail', compact('order', 'price_field', 'snapToken'));
-
+        return view('user.detail', compact('order', 'field', 'snapToken'));
     }
 
     public function edit(Request $request)
     {
     }
 
-    public function destroy(Request $request)
+    public function destroy($id)
     {
+        $order = Order::findOrFail($id);
+        $order->delete();
+
+        if($order){
+            Alert::success('Success', 'Data Berhasil Dihapus!');
+            return redirect()->route('user.my-schedules');
+        }else{
+            Alert::error('Error', 'Data Gagal Dihapus!');
+            return redirect()->route('user.my-schedules');
+        }
     }
 }
