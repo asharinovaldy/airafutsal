@@ -51,7 +51,7 @@ class ScheduleController extends Controller
 
     public function data()
     {
-        $schedule = Order::all();
+        $schedule = Order::withTrashed()->get();
         return DataTables::of($schedule)
             ->addIndexColumn()
             ->editColumn('action', function ($schedule) {
