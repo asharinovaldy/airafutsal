@@ -66,6 +66,7 @@ class ScheduleController extends Controller
     }
 
     public function store(Request $request){
+
         // get time begin
         $time_begin = Carbon::parse($request->booking_time);
 

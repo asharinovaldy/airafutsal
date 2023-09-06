@@ -63,9 +63,11 @@
                             </div>
                             <div class="mb-3">
                                  @php
-                                    $timestamps = ['08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
-                                 @endphp
+                                    $timestamps = ['08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
 
+                                    date_default_timezone_set('Asia/Makassar');
+                                    $currentTime = date('H');
+                                @endphp
                                 <label for="booking_time" class="form-label">Waktu Mulai</label>
                                 <select name="booking_time" id="booking_time" class="form-select" required>
                                     @foreach ($timestamps as $time)

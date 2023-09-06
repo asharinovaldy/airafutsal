@@ -70,6 +70,14 @@ class ScheduleController extends Controller
 
     public function store(Request $request)
     {
+        date_default_timezone_set('Asia/Makassar');
+        $booking_date = Carbon::parse($request->booking_date);
+        $today = Carbon::now()->toDateString();
+
+        $current_time = Carbon::now()->toTimeString('minutes');
+
+        // dd($current_time);
+
         // get time begin
         $time_begin = Carbon::parse($request->booking_time);
 
@@ -172,38 +180,46 @@ class ScheduleController extends Controller
         // if booking time is available, then store the data to database
         if (!$timeComparison) {
             // validate form
-            $request->validate([
-                'field' => 'string|required',
-                'booking_name' => 'string|required',
-                'booking_name' => 'string|required',
-                'duration' => 'numeric|required|min:1',
-                'booking_date' => 'date|required'
-            ]);
+
+            // if booking date is today and booking time is passed current time
+            if ($booking_date->eq($today) && $time_begin->lte($current_time)){
+                Alert::error('Error', 'Mohon maaf, jam bermain yang anda booking telah melewati jam sekarang. Silahkan booking di beberapa jam kedepan');
+                return redirect()->route('user.my-schedules');
+            }else{
+                $request->validate([
+                    'field' => 'string|required',
+                    'booking_name' => 'string|required',
+                    'booking_name' => 'string|required',
+                    'duration' => 'numeric|required|min:1',
+                    'booking_date' => 'date|required'
+                ]);
 
 
-            $order = new Order();
+                $order = new Order();
 
-            $order->prefix = Str::random(5);
-            $order->field_id = $request->field;
-            $order->boots_id = $request->boots;
-            $order->balls_id = $request->balls;
-            $order->user_id = Auth::user()->id;
-            $order->name = $request->booking_name;
-            $order->booking_time = json_encode($actual_time);
-            $order->duration = $request->duration;
-            $order->booking_date = $request->booking_date;
-            $order->total_amount = $total_amount;
+                $order->prefix = Str::random(5);
+                $order->field_id = $request->field;
+                $order->boots_id = $request->boots;
+                $order->balls_id = $request->balls;
+                $order->user_id = Auth::user()->id;
+                $order->name = $request->booking_name;
+                $order->booking_time = json_encode($actual_time);
+                $order->duration = $request->duration;
+                $order->booking_date = $request->booking_date;
+                $order->total_amount = $total_amount;
 
-            if ($request->payment === 'Transfer'){
-                $order->status = 'Pending';
-            } else if ($request->payment === 'Cash') {
-                $order->status = 'Cash';
+                if ($request->payment === 'Transfer'){
+                    $order->status = 'Pending';
+                } else if ($request->payment === 'Cash') {
+                    $order->status = 'Cash';
+                }
+
+                $order->save();
+
+                Alert::success('Success', 'Terimakasih, lapangan telah dibooking. Untuk melanjutkan pembayaran, klik tombol detail di halaman.');
+                return redirect()->route('user.my-schedules');
             }
 
-            $order->save();
-
-            Alert::success('Success', 'Terimakasih, lapangan telah dibooking. Untuk melanjutkan pembayaran, klik tombol detail di halaman.');
-            return redirect()->route('user.my-schedules');
         } else {
             // return error message if field is booked
             Alert::error('Error', 'Mohon maaf, jam bermain yang anda booking sudah terisi. Silahkan booking di jam lain');
